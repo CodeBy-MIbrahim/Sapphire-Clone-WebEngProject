@@ -1,4 +1,3 @@
-/* 1. GLOBAL RESET - Removes the white gaps around the page */
 * {
   margin: 0;
   padding: 0;
@@ -9,13 +8,11 @@
 
 html, body, #root {
   width: 100%;
-  /* REMOVED: height: 100%; - This was breaking the scroll event listener */
   font-family: 'Montserrat', sans-serif;
   background-color: #ffffff;
   overflow-x: hidden;
 }
 
-/* 2. NAVBAR STYLING - Transparent & Overlaying */
 .sapphire-nav-transparent {
   position: absolute;
   top: 0;
@@ -60,79 +57,4 @@ html, body, #root {
   color: white;
   margin-left: 30px;
   cursor: pointer;
-}
-
-/* 3. HERO BANNER - Full Screen Edge-to-Edge */
-.hero-banner {
-  position: relative;
-  height: 100vh;
-  width: 120vw;
-  background-image: url('https://cdn.shopify.com/s/files/1/0027/2596/9964/files/Man_slider_23bab185-6aec-4c7d-b461-e205e76fdcc8.webp');
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-}
-
-.hero-bottom-text {
-  position: absolute;
-  bottom: 10%;
-  width: 100%;
-  text-align: center;
-  color: white;
-}
-
-.hero-bottom-text h1 {
-  font-size: 3.5rem;
-  letter-spacing: 6px;
-  margin-bottom: 25px;
-  font-weight: 500;
-}
-
-.hero-bottom-links a {
-  color: white;
-  text-decoration: none;
-  margin: 0 25px;
-  font-size: 0.9rem;
-  letter-spacing: 3px;
-  font-weight: 600;
-}
-
-.hero-bottom-links a:hover {
-  text-decoration: underline;
-  text-underline-offset: 6px;
-}
-
-/* 4. PRODUCT & CATEGORY STYLING */
-.category-img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.category-card:hover .category-img {
-  transform: scale(1.04);
-}
-
-.product-card {
-  border: none !important;
-  border-radius: 0 !important;
-  background-color: transparent !important;
-}
-
-.btn-add-bag {
-  background-color: transparent;
-  color: #000;
-  border: 1px solid #000;
-  border-radius: 0;
-  font-size: 0.75rem;
-  padding: 12px;
-  letter-spacing: 2px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-add-bag:hover {
-  background-color: #000;
-  color: #fff;
 }

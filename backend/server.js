@@ -1,141 +1,79 @@
 const express = require('express');
 const cors = require('cors');
+const sqlite3 = require('sqlite3').verbose();
+
 const app = express();
 const PORT = 5000;
 
-// Middleware
-app.use(cors()); // Enables cross-origin requests from your React app
-app.use(express.json()); // Parses incoming JSON requests
+app.use(cors());
+app.use(express.json());
 
-// In-Memory Database (Fully updated for Men, Women, and Fragrances)
-let products = [
-    // ---------------- MENS PRODUCTS ----------------
-    { 
-        id: 1, 
-        name: "Woven Textured Kurta", 
-        price: 3590, 
-        category: "mens",
-        image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dw12d7e60e/images/April26/22ndApril26/MST2P26V5120_2.JPG?sw=1000&sh=1200"
-    },
-    { 
-        id: 2, 
-        name: "Classic Wash & Wear Suit", 
-        price: 5990, 
-        category: "mens",
-        image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dw1e658958/images/April26/22ndApril26/MST2P26V5150_2.JPG?sw=1000&sh=1200"
-    },
-    { 
-        id: 3, 
-        name: "Embroidered Cotton Kurta", 
-        price: 4590, 
-        category: "mens",
-        image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dw08521d4f/images/April26/24thApril26/MST2P26V5160_1.jpg?sw=1000&sh=1200"
-    },
-    { 
-        id: 4, 
-        name: "Premium Boski Finish Suit", 
-        price: 6990, 
-        category: "mens",
-        image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dw0da3f59e/images/April26/22ndApril26/MST2P26V5800_2.JPG?sw=1000&sh=1200"
-    },
+// Initialize SQLite database
+const db = new sqlite3.Database('./sapphire.db');
 
-    // ---------------- WOMENS PRODUCTS (Matching Screenshot) ----------------
-    { 
-        id: 5, 
-        name: "2 Piece - Printed Lawn Suit", 
-        price: 6590, 
-        category: "womens", 
-        image: "https://cdn.shopify.com/s/files/1/0027/2596/9964/files/outfits_d_ae443473-ce57-4432-8bd3-b2c4c54b7e93.webp" 
-    },
-    { 
-        id: 6, 
-        name: "2 Piece - Printed Lawn Suit", 
-        price: 6990, 
-        category: "womens", 
-        image: "https://cdn.shopify.com/s/files/1/0027/2596/9964/files/waistcoats_d.webp" 
-    },
-    { 
-        id: 7, 
-        name: "Embroidered Crosshatch Shirt", 
-        price: 5990, 
-        category: "womens", 
-        image: "https://cdn.shopify.com/s/files/1/0027/2596/9964/files/unstich_man.webp" 
-    },
-    { 
-        id: 8, 
-        name: "Embroidered Crosshatch Shirt", 
-        price: 5590, 
-        category: "womens", 
-        image: "https://cdn.shopify.com/s/files/1/0027/2596/9964/files/festive_silk_d_dfd93e4b-739b-45cc-b076-eab04da3ff8d.webp" 
-    },
-
-    // ---------------- FRAGRANCES PRODUCTS ----------------
-    { 
-        id: 9, 
-        name: "Oud Absolute (100ml)", 
-        price: 3990, 
-        category: "fragrances", 
-        image: "https://cdn.shopify.com/s/files/1/0027/2596/9964/files/fragrance_slider.webp" 
-    },
-    { 
-        id: 10, 
-        name: "Classic Citrus Pour Homme", 
-        price: 2500, 
-        category: "fragrances", 
-        image: "https://cdn.shopify.com/s/files/1/0027/2596/9964/files/fragrance_bottle.webp" 
-    }
+// Seed data
+const initialProducts = [
+    { name: "Woven Textured Kurta", price: 3590, category: "mens", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dw12d7e60e/images/April26/22ndApril26/MST2P26V5120_2.JPG?sw=1000&sh=1200" },
+    { name: "Classic Wash & Wear Suit", price: 5990, category: "mens", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dw1e658958/images/April26/22ndApril26/MST2P26V5150_2.JPG?sw=1000&sh=1200" },
+    { name: "Embroidered Cotton Kurta", price: 4590, category: "mens", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dw08521d4f/images/April26/24thApril26/MST2P26V5160_1.jpg?sw=1000&sh=1200" },
+    { name: "Premium Boski Finish Suit", price: 6990, category: "mens", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dw0da3f59e/images/April26/22ndApril26/MST2P26V5800_2.JPG?sw=1000&sh=1200" },
+    { name: "2 Piece - Printed Lawn Suit", price: 6590, category: "womens", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dwee52dda3/images/June26/15thJune26/PBS2CAHMV667_999_1.JPG?sw=1000&sh=1200" },
+    { name: "2 Piece - Printed Lawn Suit", price: 6990, category: "womens", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dw625193c6/images/June26/8thJune26/PBS2CAHMV669_999_2.jpg?sw=1000&sh=1200" },
+    { name: "2 Piece - Printed Lawn Suit", price: 7590, category: "womens", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dwb682f15d/images/June26/15thJune26/PBS2CAHMV670_999_1.JPG?sw=1000&sh=1200" },
+    { name: "2 Piece - Printed Lawn Suit", price: 5590, category: "womens", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dwbb9c200b/images/June26/8thJune26/PBS2CAHMV672_999_2.jpg?sw=1000&sh=1200" },
+    { name: "Riptide", price: 7490, category: "fragrances", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dw52731aad/images/April26/22ndApril26/000000FRM031_1.jpg?sw=1000&sh=1200" },
+    { name: "Fall For Him", price: 9999, category: "fragrances", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dw7057b515/images/April26/14thApril26/000000FRM046_1.jpg?sw=1000&sh=1200" },
+    { name: "Driftwood", price: 9999, category: "fragrances", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dwceeba636/images/April26/14thApril26/000000FRM030_1.jpg?sw=1000&sh=1200" },
+    { name: "Rebel", price: 9999, category: "fragrances", image: "https://pk.sapphireonline.pk/dw/image/v2/BKSB_PRD/on/demandware.static/-/Sites-sapphire-master-catalog/default/dwc62c0cb5/images/April26/14thApril26/000000FRM003_1.jpg?sw=1000&sh=1200" }
 ];
 
-// 1. READ: Get all products (or filter by category via query params)
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        price INTEGER,
+        category TEXT,
+        image TEXT
+    )`);
+
+    // Check if table is empty before seeding
+    db.get("SELECT COUNT(*) AS count FROM products", (err, row) => {
+        if (row.count === 0) {
+            const stmt = db.prepare("INSERT INTO products (name, price, category, image) VALUES (?, ?, ?, ?)");
+            initialProducts.forEach(p => stmt.run(p.name, p.price, p.category, p.image));
+            stmt.finalize();
+            console.log("Database seeded with initial products.");
+        }
+    });
+});
+
+// CRUD ENDPOINTS
 app.get('/api/products', (req, res) => {
-    const category = req.query.category;
-    if (category) {
-        const filteredProducts = products.filter(p => p.category === category);
-        return res.json(filteredProducts);
-    }
-    res.json(products);
+    const { category } = req.query;
+    const sql = category ? 'SELECT * FROM products WHERE category = ?' : 'SELECT * FROM products';
+    db.all(sql, category ? [category] : [], (err, rows) => {
+        err ? res.status(500).json({ error: err.message }) : res.json(rows);
+    });
 });
 
-// 2. CREATE: Add a new product (from Admin Dashboard)
 app.post('/api/products', (req, res) => {
-    const newProduct = {
-        id: products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1, // Auto-generate next ID
-        name: req.body.name,
-        price: parseInt(req.body.price),
-        category: req.body.category,
-        image: req.body.image || "https://via.placeholder.com/300x400?text=No+Image"
-    };
-    products.push(newProduct);
-    res.status(201).json(newProduct);
+    const { name, price, category, image } = req.body;
+    db.run('INSERT INTO products (name, price, category, image) VALUES (?, ?, ?, ?)', [name, price, category, image], function(err) {
+        err ? res.status(500).json({ error: err.message }) : res.status(201).json({ id: this.lastID });
+    });
 });
 
-// 3. UPDATE: Modify an existing product
 app.put('/api/products/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = products.findIndex(p => p.id === id);
-
-    if (index !== -1) {
-        products[index] = { ...products[index], ...req.body, id: id };
-        res.json(products[index]);
-    } else {
-        res.status(404).json({ message: "Product not found" });
-    }
+    const { name, price, category, image } = req.body;
+    db.run('UPDATE products SET name = ?, price = ?, category = ?, image = ? WHERE id = ?', [name, price, category, image, req.params.id], (err) => {
+        err ? res.status(500).json({ error: err.message }) : res.json({ message: "Updated" });
+    });
 });
 
-// 4. DELETE: Remove a product (from Admin Dashboard)
 app.delete('/api/products/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const initialLength = products.length;
-    products = products.filter(p => p.id !== id);
-
-    if (products.length < initialLength) {
-        res.json({ message: "Product deleted successfully" });
-    } else {
-        res.status(404).json({ message: "Product not found" });
-    }
+    db.run('DELETE FROM products WHERE id = ?', req.params.id, (err) => {
+        err ? res.status(500).json({ error: err.message }) : res.json({ message: "Deleted" });
+    });
 });
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Backend Server actively running on http://localhost:${PORT}`); 
-});
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
