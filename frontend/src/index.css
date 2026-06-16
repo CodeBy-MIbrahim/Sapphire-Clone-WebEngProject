@@ -9,7 +9,7 @@
 
 html, body, #root {
   width: 100%;
-  height: 100%;
+  /* REMOVED: height: 100%; - This was breaking the scroll event listener */
   font-family: 'Montserrat', sans-serif;
   background-color: #ffffff;
   overflow-x: hidden;
